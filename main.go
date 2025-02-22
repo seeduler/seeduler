@@ -17,8 +17,12 @@ func main() {
 	eventService := services.NewEventService(eventRepo)
 	eventController := controllers.NewEventController(eventService)
 
+	hallRepo := repositories.NewHallRepository("data/hall.json")
+	hallService := services.NewHallService(hallRepo)
+	hallController := controllers.NewHallController(hallService, eventService)
+
 	// Register all routes
-	routes.RegisterRoutes(mux, eventController)
+	routes.RegisterRoutes(mux, eventController, hallController)
 
 	log.Printf("Server started at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", mux))

@@ -16,6 +16,11 @@ func NewEventService(eventRepository *repositories.EventRepository) *EventServic
 	return &EventService{EventRepository: eventRepository}
 }
 
+func (s *EventService) GetAllEvents() ([]models.Event, error) {
+	log.Println("Getting all events (in service)")
+	return s.EventRepository.GetEvents()
+}
+
 func (s *EventService) GetEventsByHallIds(req models.GetEventsRequest) (resp []models.Event, err error) {
 	log.Println("Getting all events (in service)")
 	events, err := s.EventRepository.GetEvents()
