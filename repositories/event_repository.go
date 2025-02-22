@@ -39,6 +39,11 @@ func (repo *EventRepository) readJSONFile() ([]models.Event, error) {
 	return events, nil
 }
 
-func (repo *EventRepository) GetAllEvents() ([]models.Event, error) {
-	return repo.readJSONFile()
+func (repo *EventRepository) GetEvents() (resp []models.Event, err error) {
+	log.Println("Getting all events (in repository)")
+	events, err := repo.readJSONFile()
+	if err != nil {
+		return nil, err
+	}
+	return events, nil
 }
