@@ -1,13 +1,11 @@
 package routes
 
 import (
-	"log"
-	"net/http"
+    "net/http"
 
-	"github.com/seeduler/seeduler/controllers"
+    "github.com/seeduler/seeduler/controllers"
 )
 
 func RegisterEventRoutes(mux *http.ServeMux, eventController *controllers.EventController) {
-	log.Println("Registering event routes")
-	mux.HandleFunc("/events", eventController.GetAllEvents)
+    mux.HandleFunc("/events/by-hall-ids", eventController.GetHallEvents)
 }

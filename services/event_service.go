@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"log"
 
 	"github.com/seeduler/seeduler/models"
@@ -15,7 +16,22 @@ func NewEventService(eventRepository *repositories.EventRepository) *EventServic
 	return &EventService{EventRepository: eventRepository}
 }
 
-func (s *EventService) GetAllEvents() ([]models.Event, error) {
+func (s *EventService) GetEventsByHallIds(req models.GetEventsRequest) (resp []models.Event, err error) {
 	log.Println("Getting all events (in service)")
-	return s.EventRepository.GetAllEvents()
+	events, err := s.EventRepository.GetEvents()
+	if err != nil {
+		return resp, err
+	}
+	if len(events) == 0 {
+		return resp, errors.New("No events found")
+	}
+	for _, event := range events {
+		for _, hallID := range req.HallIds {
+			if event.HallId == hallID {
+				resp = append(resp, event)
+				break
+			}
+		}
+	}
+	return
 }
