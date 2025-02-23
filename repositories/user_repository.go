@@ -9,17 +9,17 @@ import (
     "github.com/seeduler/seeduler/models"
 )
 
-type EventRepository struct {
+type UserRepository struct {
     FilePath string
 }
 
-func NewEventRepository(filePath string) *EventRepository {
-    return &EventRepository{FilePath: filePath}
+func NewUserRepository(filePath string) *UserRepository {
+    return &UserRepository{FilePath: filePath}
 }
 
-func (repo *EventRepository) readJSONFile() ([]models.Event, error) {
+func (repo *UserRepository) readJSONFile() ([]models.User, error) {
     log.Println("Reading JSON file")
-    var events []models.Event
+    var users []models.User
     file, err := os.Open(repo.FilePath)
     if err != nil {
         return nil, err
@@ -31,28 +31,28 @@ func (repo *EventRepository) readJSONFile() ([]models.Event, error) {
         return nil, err
     }
 
-    err = json.Unmarshal(bytes, &events)
+    err = json.Unmarshal(bytes, &users)
     if err != nil {
         return nil, err
     }
 
-    return events, nil
+    return users, nil
 }
 
-func (repo *EventRepository) GetEvents() ([]models.Event, error) {
-    log.Println("Getting all events (in repository)")
+func (repo *UserRepository) GetUsers() ([]models.User, error) {
+    log.Println("Getting all users (in repository)")
     return repo.readJSONFile()
 }
 
-func (repo *EventRepository) SaveEvents(events []models.Event) error {
-    log.Println("Saving events to JSON file")
+func (repo *UserRepository) SaveUsers(users []models.User) error {
+    log.Println("Saving users to JSON file")
     file, err := os.Create(repo.FilePath)
     if err != nil {
         return err
     }
     defer file.Close()
 
-    bytes, err := json.Marshal(events)
+    bytes, err := json.Marshal(users)
     if err != nil {
         return err
     }

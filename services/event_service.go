@@ -142,3 +142,8 @@ func (s *EventService) UpdateDelay() error {
 
 	return s.EventRepository.SaveEvents(events)
 }
+
+func (s *EventService) SaveEvents(events []models.Event) error {
+	log.Println("Saving events (in service)")
+	return s.EventRepository.SaveEvents(events)
+}

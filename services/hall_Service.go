@@ -19,3 +19,8 @@ func (s *HallService) GetAllHalls() ([]models.Hall, error) {
     log.Println("Getting all halls (in service)")
     return s.HallRepository.GetHalls()
 }
+
+func (s *HallService) SaveHalls(halls []models.Hall) error {
+    log.Println("Saving halls (in service)")
+    return s.HallRepository.SaveHalls(halls)
+}
