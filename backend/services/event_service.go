@@ -7,6 +7,7 @@ import (
 
 	"github.com/seeduler/seeduler/models"
 	"github.com/seeduler/seeduler/repositories"
+	"github.com/seeduler/seeduler/utils"
 )
 
 type EventService struct {
@@ -40,6 +41,12 @@ func (s *EventService) GetEventsByHallIds(req models.GetEventsRequest) (resp []m
 			}
 		}
 	}
+	hall, err := s.HallRepository.GetHallByID(req.HallIds[0])
+	if err != nil {
+		return resp, err
+	}
+	delay := hall.DelayedTime
+	resp = utils.ProcessEvents(resp, delay)
 	return
 }
 
@@ -56,31 +63,32 @@ func (s *EventService) GetFirstEventOfEachHall() ([]models.Event, error) {
 	}
 
 	currentTime := time.Now()
-	firstEvents := make(map[int]models.Event)
+	firstEvents := make([]models.Event, 0)
 
-	for _, event := range events {
-		if event.IsCompleted {
-			continue
-		}
-
-		for _, hall := range halls {
-			if event.HallId == hall.ID {
+	for _, hall := range halls {
+		var firstEvent *models.Event
+		for _, event := range events {
+			if event.HallId == hall.ID && !event.IsCompleted {
 				delayedEndTime := event.EndTime.Add(time.Duration(hall.DelayedTime) * time.Minute)
 				if delayedEndTime.After(currentTime) {
-					if firstEvent, exists := firstEvents[hall.ID]; !exists || delayedEndTime.Before(firstEvent.EndTime) {
-						firstEvents[hall.ID] = event
+					if firstEvent == nil || delayedEndTime.Before(firstEvent.EndTime) {
+						firstEvent = &event
+						firstEvent.EndTime = delayedEndTime
+						firstEvent.StartTime = firstEvent.StartTime.Add(time.Duration(hall.DelayedTime) * time.Minute)
 					}
 				}
 			}
 		}
+
+		if firstEvent != nil {
+			adjustedEvent := *firstEvent
+			adjustedEvent.StartTime = adjustedEvent.StartTime.Add(time.Duration(hall.DelayedTime) * time.Minute)
+			adjustedEvent.EndTime = adjustedEvent.EndTime.Add(time.Duration(hall.DelayedTime) * time.Minute)
+			firstEvents = append(firstEvents, adjustedEvent)
+		}
 	}
 
-	result := make([]models.Event, 0, len(firstEvents))
-	for _, event := range firstEvents {
-		result = append(result, event)
-	}
-
-	return result, nil
+	return firstEvents, nil
 }
 
 func (s *EventService) MarkEventCompleted(eventID int) error {
