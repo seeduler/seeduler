@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt"
 	"github.com/seeduler/seeduler/models"
 	"github.com/seeduler/seeduler/repositories"
 )

@@ -5,7 +5,7 @@ import (
     "net/http"
     "strings"
 
-    "github.com/dgrijalva/jwt-go"
+    "github.com/golang-jwt/jwt"
     "github.com/seeduler/seeduler/models"
     "github.com/seeduler/seeduler/services"
 )
@@ -18,7 +18,7 @@ func AuthMiddleware(userService *services.UserService) func(http.Handler) http.H
     return func(next http.Handler) http.Handler {
         return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
             authHeader := r.Header.Get("Authorization")
-            if (authHeader == "") {
+            if authHeader == "" {
                 http.Error(w, "Authorization header required", http.StatusUnauthorized)
                 return
             }
