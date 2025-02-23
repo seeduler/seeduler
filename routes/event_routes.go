@@ -1,15 +1,20 @@
 package routes
 
 import (
-    "net/http"
+	"net/http"
 
-    "github.com/seeduler/seeduler/controllers"
+	"github.com/seeduler/seeduler/controllers"
+	"github.com/seeduler/seeduler/middlewares"
+	"github.com/seeduler/seeduler/services"
 )
 
-func RegisterEventRoutes(mux *http.ServeMux, eventController *controllers.EventController) {
-    mux.HandleFunc("/events/by-hall-ids", eventController.GetHallEvents)
-    mux.HandleFunc("/events/mark-completed", eventController.MarkEventCompleted)
-    mux.HandleFunc("/events/mark-uncompleted", eventController.MarkEventUncompleted)
-    mux.HandleFunc("/events/add-delay", eventController.AddDelay)
-    mux.HandleFunc("/events/update-delay", eventController.UpdateDelay)
+func RegisterEventRoutes(mux *http.ServeMux, eventController *controllers.EventController, userService *services.UserService) {
+	authMiddleware := middlewares.AuthMiddleware(userService)
+
+	mux.HandleFunc("/events/by-hall-ids", eventController.GetHallEvents)
+	mux.HandleFunc("/events/first-event-of-each-hall", eventController.GetFirstEventOfEachHall)
+	mux.Handle("/events/mark-completed", authMiddleware(http.HandlerFunc(eventController.MarkEventCompleted)))
+	mux.Handle("/events/mark-uncompleted", authMiddleware(http.HandlerFunc(eventController.MarkEventUncompleted)))
+	mux.Handle("/events/add-delay", authMiddleware(http.HandlerFunc(eventController.AddDelay)))
+	mux.Handle("/events/update-delay", authMiddleware(http.HandlerFunc(eventController.UpdateDelay)))
 }

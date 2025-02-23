@@ -43,6 +43,46 @@ func (s *EventService) GetEventsByHallIds(req models.GetEventsRequest) (resp []m
 	return
 }
 
+func (s *EventService) GetFirstEventOfEachHall() ([]models.Event, error) {
+	log.Println("Getting first event of each hall (in service)")
+	events, err := s.EventRepository.GetEvents()
+	if err != nil {
+		return nil, err
+	}
+
+	halls, err := s.HallRepository.GetHalls()
+	if err != nil {
+		return nil, err
+	}
+
+	currentTime := time.Now()
+	firstEvents := make(map[int]models.Event)
+
+	for _, event := range events {
+		if event.IsCompleted {
+			continue
+		}
+
+		for _, hall := range halls {
+			if event.HallId == hall.ID {
+				delayedEndTime := event.EndTime.Add(time.Duration(hall.DelayedTime) * time.Minute)
+				if delayedEndTime.After(currentTime) {
+					if firstEvent, exists := firstEvents[hall.ID]; !exists || delayedEndTime.Before(firstEvent.EndTime) {
+						firstEvents[hall.ID] = event
+					}
+				}
+			}
+		}
+	}
+
+	result := make([]models.Event, 0, len(firstEvents))
+	for _, event := range firstEvents {
+		result = append(result, event)
+	}
+
+	return result, nil
+}
+
 func (s *EventService) MarkEventCompleted(eventID int) error {
 	events, err := s.EventRepository.GetEvents()
 	if err != nil {

@@ -12,11 +12,11 @@ import (
 
 type UserService struct {
 	UserRepository *repositories.UserRepository
-	jwtKey         []byte
+	JWTKey         []byte
 }
 
 func NewUserService(userRepository *repositories.UserRepository, jwtKey []byte) *UserService {
-	return &UserService{UserRepository: userRepository, jwtKey: jwtKey}
+	return &UserService{UserRepository: userRepository, JWTKey: jwtKey}
 }
 
 func (s *UserService) GetAllUsers() ([]models.User, error) {
@@ -51,7 +51,7 @@ func (s *UserService) GenerateJWT(user *models.User) (string, error) {
 		"exp":      time.Now().Add(time.Hour * 24).Unix(),
 	})
 
-	tokenString, err := token.SignedString(s.jwtKey)
+	tokenString, err := token.SignedString(s.JWTKey)
 	if err != nil {
 		return "", err
 	}
