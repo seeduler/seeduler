@@ -41,9 +41,22 @@ func (repo *HallRepository) readJSONFile() ([]models.Hall, error) {
 
 func (repo *HallRepository) GetHalls() ([]models.Hall, error) {
     log.Println("Getting all halls (in repository)")
-    halls, err := repo.readJSONFile()
+    return repo.readJSONFile()
+}
+
+func (repo *HallRepository) SaveHalls(halls []models.Hall) error {
+    log.Println("Saving halls to JSON file")
+    file, err := os.Create(repo.FilePath)
     if err != nil {
-        return nil, err
+        return err
     }
-    return halls, nil
+    defer file.Close()
+
+    bytes, err := json.Marshal(halls)
+    if err != nil {
+        return err
+    }
+
+    _, err = file.Write(bytes)
+    return err
 }
