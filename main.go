@@ -14,10 +14,10 @@ func main() {
 	mux := http.NewServeMux()
 
 	eventRepo := repositories.NewEventRepository("data/event.json")
-	eventService := services.NewEventService(eventRepo)
+	hallRepo := repositories.NewHallRepository("data/hall.json")
+	eventService := services.NewEventService(eventRepo, hallRepo)
 	eventController := controllers.NewEventController(eventService)
 
-	hallRepo := repositories.NewHallRepository("data/hall.json")
 	hallService := services.NewHallService(hallRepo)
 	hallController := controllers.NewHallController(hallService, eventService)
 

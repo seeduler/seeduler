@@ -27,6 +27,12 @@ func (c *HallController) GetAllHalls(w http.ResponseWriter, r *http.Request) {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
+
+    if len(halls) == 0 {
+        http.Error(w, "No halls found", http.StatusNotFound)
+        return
+    }
+
     json.NewEncoder(w).Encode(halls)
 }
 
@@ -39,14 +45,25 @@ func (c *HallController) GetHallsWithEvents(w http.ResponseWriter, r *http.Reque
         return
     }
 
+    if len(halls) == 0 {
+        http.Error(w, "No halls found", http.StatusNotFound)
+        return
+    }
+
     events, err := c.EventService.GetAllEvents()
     if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
 
+    if len(events) == 0 {
+        http.Error(w, "No events found", http.StatusNotFound)
+        return
+    }
+
     currentTime := time.Now()
     hallsWithEvents := make(map[int][]models.Event)
+    updatedEventsCount := 0
 
     for _, event := range events {
         for _, hall := range halls {
@@ -54,10 +71,18 @@ func (c *HallController) GetHallsWithEvents(w http.ResponseWriter, r *http.Reque
                 delayedEndTime := event.EndTime.Add(time.Duration(hall.DelayedTime) * time.Minute)
                 if delayedEndTime.After(currentTime) {
                     hallsWithEvents[hall.ID] = append(hallsWithEvents[hall.ID], event)
+                    updatedEventsCount++
                 }
             }
         }
     }
+
+    if len(hallsWithEvents) == 0 {
+        http.Error(w, "No events found for the halls", http.StatusNotFound)
+        return
+    }
+
+    log.Printf("Updated events count: %d", updatedEventsCount)
 
     response := make([]models.HallWithEvents, 0)
     for _, hall := range halls {

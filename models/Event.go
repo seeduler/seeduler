@@ -6,12 +6,16 @@ import (
 )
 
 type Event struct {
-    ID        int       `json:"id"`
-    Title     string    `json:"title"`
-    HallId    int       `json:"hall_id"`
-    StartTime time.Time `json:"start_time"`
-    EndTime   time.Time `json:"end_time"`
-    Info      Info      `json:"info"`
+    ID                int       `json:"id"`
+    Title             string    `json:"title"`
+    HallId            int       `json:"hall_id"`
+    ScheduledStartTime time.Time `json:"scheduled_start_time"`
+    ScheduledEndTime   time.Time `json:"scheduled_end_time"`
+    StartTime         time.Time `json:"start_time"`
+    EndTime           time.Time `json:"end_time"`
+    IsCompleted       bool      `json:"is_completed"`
+    IsStarted         bool      `json:"is_started"`
+    Info              Info      `json:"info"`
 }
 
 type Info struct {
