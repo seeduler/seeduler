@@ -7,7 +7,6 @@ import (
 
 	"github.com/seeduler/seeduler/models"
 	"github.com/seeduler/seeduler/repositories"
-	"github.com/seeduler/seeduler/utils"
 )
 
 type EventService struct {
@@ -41,13 +40,61 @@ func (s *EventService) GetEventsByHallIds(req models.GetEventsRequest) (resp []m
 			}
 		}
 	}
-	hall, err := s.HallRepository.GetHallByID(req.HallIds[0])
-	if err != nil {
-		return resp, err
-	}
-	delay := hall.DelayedTime
-	resp = utils.ProcessEvents(resp, delay)
 	return
+}
+
+func (s *EventService) AddEvent(event models.Event) error {
+	log.Println("Adding event (in service)")
+
+	// Check for valid hall_id
+	_, err := s.HallRepository.GetHallByID(event.HallId)
+	if err != nil {
+		return errors.New("invalid hall_id")
+	}
+
+	// Check for valid event_id
+	events, err := s.EventRepository.GetEvents()
+	if err != nil {
+		return err
+	}
+	for _, e := range events {
+		if e.ID == event.ID {
+			return errors.New("event_id already exists")
+		}
+	}
+
+	// Check for valid start_time and end_time
+	if event.StartTime.After(event.EndTime) {
+		return errors.New("start_time must be before end_time")
+	}
+	// Check for overlapping events
+	for _, e := range events {
+		if e.HallId == event.HallId && ((event.StartTime.Before(e.EndTime) && event.StartTime.After(e.StartTime)) || (event.EndTime.After(e.StartTime) && event.EndTime.Before(e.EndTime)) || (event.StartTime.Before(e.StartTime) && event.EndTime.After(e.EndTime))) {
+			return errors.New("event time overlaps with another event")
+		}
+	}
+
+	// Add the event
+	events = append(events, event)
+	return s.EventRepository.SaveEvents(events)
+}
+
+func (s *EventService) RemoveEvent(eventID int) error {
+    log.Println("Removing event (in service)")
+
+    events, err := s.EventRepository.GetEvents()
+    if err != nil {
+        return err
+    }
+
+    for i, event := range events {
+        if event.ID == eventID {
+            events = append(events[:i], events[i+1:]...)
+            return s.EventRepository.SaveEvents(events)
+        }
+    }
+
+    return errors.New("event not found")
 }
 
 func (s *EventService) GetFirstEventOfEachHall() ([]models.Event, error) {
@@ -73,8 +120,6 @@ func (s *EventService) GetFirstEventOfEachHall() ([]models.Event, error) {
 				if delayedEndTime.After(currentTime) {
 					if firstEvent == nil || delayedEndTime.Before(firstEvent.EndTime) {
 						firstEvent = &event
-						firstEvent.EndTime = delayedEndTime
-						firstEvent.StartTime = firstEvent.StartTime.Add(time.Duration(hall.DelayedTime) * time.Minute)
 					}
 				}
 			}

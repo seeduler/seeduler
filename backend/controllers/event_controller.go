@@ -50,6 +50,43 @@ func (c *EventController) GetFirstEventOfEachHall(w http.ResponseWriter, r *http
 	json.NewEncoder(w).Encode(events)
 }
 
+func (c *EventController) AddEvent(w http.ResponseWriter, r *http.Request) {
+	log.Println("Adding event (in controller)")
+
+	var event models.Event
+	if err := utils.DecodeRequestBody(r, &event); err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+
+	if err := c.EventService.AddEvent(event); err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(event)
+}
+
+func (c *EventController) RemoveEvent(w http.ResponseWriter, r *http.Request) {
+	log.Println("Removing event (in controller)")
+
+	var req struct {
+		EventID int `json:"event_id"`
+	}
+	if err := utils.DecodeRequestBody(r, &req); err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+
+	if err := c.EventService.RemoveEvent(req.EventID); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
 func (c *EventController) MarkEventCompleted(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		EventID int `json:"event_id"`
