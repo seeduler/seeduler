@@ -9,4 +9,5 @@ import (
 func RegisterHallRoutes(mux *http.ServeMux, hallController *controllers.HallController) {
     mux.HandleFunc("/halls", hallController.GetAllHalls)
     mux.HandleFunc("/halls/with-events", hallController.GetHallsWithEvents)
+    mux.HandleFunc("/halls/upload-data", hallController.UploadData)
 }

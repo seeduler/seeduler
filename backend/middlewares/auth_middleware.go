@@ -5,7 +5,7 @@ import (
     "net/http"
     "strings"
 
-    "github.com/dgrijalva/jwt-go"
+    "github.com/golang-jwt/jwt"
     "github.com/seeduler/seeduler/models"
     "github.com/seeduler/seeduler/services"
 )
@@ -26,7 +26,7 @@ func AuthMiddleware(userService *services.UserService) func(http.Handler) http.H
             tokenString := strings.TrimPrefix(authHeader, "Bearer ")
             claims := &jwt.MapClaims{}
             token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-                return userService.jwtKey, nil
+                return userService.JWTKey, nil
             })
 
             if err != nil || !token.Valid {

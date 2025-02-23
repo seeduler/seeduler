@@ -38,6 +38,18 @@ func (c *EventController) GetHallEvents(w http.ResponseWriter, r *http.Request) 
 	json.NewEncoder(w).Encode(events)
 }
 
+func (c *EventController) GetFirstEventOfEachHall(w http.ResponseWriter, r *http.Request) {
+	log.Println("Getting first event of each hall (in controller)")
+
+	events, err := c.EventService.GetFirstEventOfEachHall()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(events)
+}
+
 func (c *EventController) MarkEventCompleted(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		EventID int `json:"event_id"`

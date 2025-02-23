@@ -7,6 +7,7 @@ import (
 
 	"github.com/seeduler/seeduler/models"
 	"github.com/seeduler/seeduler/repositories"
+	"github.com/seeduler/seeduler/utils"
 )
 
 type EventService struct {
@@ -40,7 +41,54 @@ func (s *EventService) GetEventsByHallIds(req models.GetEventsRequest) (resp []m
 			}
 		}
 	}
+	hall, err := s.HallRepository.GetHallByID(req.HallIds[0])
+	if err != nil {
+		return resp, err
+	}
+	delay := hall.DelayedTime
+	resp = utils.ProcessEvents(resp, delay)
 	return
+}
+
+func (s *EventService) GetFirstEventOfEachHall() ([]models.Event, error) {
+	log.Println("Getting first event of each hall (in service)")
+	events, err := s.EventRepository.GetEvents()
+	if err != nil {
+		return nil, err
+	}
+
+	halls, err := s.HallRepository.GetHalls()
+	if err != nil {
+		return nil, err
+	}
+
+	currentTime := time.Now()
+	firstEvents := make([]models.Event, 0)
+
+	for _, hall := range halls {
+		var firstEvent *models.Event
+		for _, event := range events {
+			if event.HallId == hall.ID && !event.IsCompleted {
+				delayedEndTime := event.EndTime.Add(time.Duration(hall.DelayedTime) * time.Minute)
+				if delayedEndTime.After(currentTime) {
+					if firstEvent == nil || delayedEndTime.Before(firstEvent.EndTime) {
+						firstEvent = &event
+						firstEvent.EndTime = delayedEndTime
+						firstEvent.StartTime = firstEvent.StartTime.Add(time.Duration(hall.DelayedTime) * time.Minute)
+					}
+				}
+			}
+		}
+
+		if firstEvent != nil {
+			adjustedEvent := *firstEvent
+			adjustedEvent.StartTime = adjustedEvent.StartTime.Add(time.Duration(hall.DelayedTime) * time.Minute)
+			adjustedEvent.EndTime = adjustedEvent.EndTime.Add(time.Duration(hall.DelayedTime) * time.Minute)
+			firstEvents = append(firstEvents, adjustedEvent)
+		}
+	}
+
+	return firstEvents, nil
 }
 
 func (s *EventService) MarkEventCompleted(eventID int) error {
