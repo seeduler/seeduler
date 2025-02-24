@@ -1,7 +1,4 @@
 
-### `docs/user_docs.md`
-
-```markdown
 # User Documentation
 
 ## Introduction

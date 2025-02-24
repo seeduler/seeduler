@@ -1,13 +1,7 @@
-Sure, let's create the documentation files in Markdown format so you can copy them directly.
-
-### `docs/developer_docs.md`
-
-```markdown
 # Developer Documentation
 
 ## Project Structure
 
-```
 ```
 .
 ├── .env
