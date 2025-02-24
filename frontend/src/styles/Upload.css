@@ -1,0 +1,95 @@
+.upload-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+}
+
+.upload-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 600px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.upload-card h1 {
+  color: var(--primary);
+  margin: 0 0 1.5rem;
+  text-align: center;
+  font-size: 2rem;
+}
+
+.instruction {
+  color: var(--text);
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+textarea {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-family: monospace;
+  margin-bottom: 1rem;
+  resize: vertical;
+  min-height: 200px;
+}
+
+.error-message {
+  color: var(--error);
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: #fee2e2;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--primary);
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.submit-btn:hover {
+  background-color: var(--primary-dark);
+}
+
+.warning-banner {
+  background-color: #fef3c7;
+  color: #92400e;
+  padding: 1rem;
+  border-radius: 6px;
+  margin: 1rem 0;
+  text-align: center;
+  font-weight: 600;
+}
+
+.credentials-list {
+  margin: 1.5rem 0;
+}
+
+.credential-item {
+  background-color: #f8fafc;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.credential-item h3 {
+  margin: 0 0 0.5rem;
+  color: var(--primary);
+}
+
+.credential-item p {
+  margin: 0;
+  font-family: monospace;
+} 

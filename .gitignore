@@ -1,0 +1,72 @@
+# Binaries and compiled files
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go specific
+/vendor/
+/bin/
+/pkg/
+
+# IDE specific
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Application specific data and config files
+/data/
+/data/*.json
+/config/*.json
+/config/*.yaml
+/config/*.yml
+.env
+*.env
+.env.*
+
+# Credentials and secrets
+**/credentials.json
+**/secrets.json
+**/secret.json
+**/*.key
+**/*.pem
+
+# Log files
+*.log
+/logs/
+/log/
+
+# Test coverage
+coverage.txt
+coverage.html
+*.cover
+
+# Debug files
+debug
+debug.test
+__debug_bin
+
+# Binary output directory
+/dist/
+/build/
+
+# Air live reload
+tmp/
+.air.toml
+
+# Local development files
+*.local
+*.local.*
+docker-compose.override.yml
+
+# System files
+Thumbs.db
+.DS_Store
+*.bak
+*.tmp
+*~

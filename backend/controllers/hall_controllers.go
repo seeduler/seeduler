@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"log"
+	"math/rand"
 	"net/http"
 	"time"
 
@@ -97,6 +98,16 @@ func (c *HallController) GetHallsWithEvents(w http.ResponseWriter, r *http.Reque
 	json.NewEncoder(w).Encode(response)
 }
 
+func generateSecurePassword() string {
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*"
+	length := 12
+	password := make([]byte, length)
+	for i := range password {
+		password[i] = charset[rand.Intn(len(charset))]
+	}
+	return string(password)
+}
+
 func (c *HallController) UploadData(w http.ResponseWriter, r *http.Request) {
 	log.Println("Uploading data (in controller)")
 
@@ -119,12 +130,28 @@ func (c *HallController) UploadData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Create users for each hall
+	// Create users for each hall with secure passwords
 	users := make([]models.User, len(data.Halls))
+	credentials := make([]struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+		HallID   int    `json:"hall_id"`
+	}, len(data.Halls))
+
 	for i, hall := range data.Halls {
+		password := generateSecurePassword()
 		users[i] = models.User{
 			Username: hall.Name + "_user",
-			Password: "password", // Generate a secure password in a real application
+			Password: password,
+			HallID:   hall.ID,
+		}
+		credentials[i] = struct {
+			Username string `json:"username"`
+			Password string `json:"password"`
+			HallID   int    `json:"hall_id"`
+		}{
+			Username: users[i].Username,
+			Password: password,
 			HallID:   hall.ID,
 		}
 	}
@@ -134,5 +161,6 @@ func (c *HallController) UploadData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(users)
+	// Return the credentials instead of users
+	json.NewEncoder(w).Encode(credentials)
 }

@@ -1,0 +1,10 @@
+server:
+  api_url: "http://localhost:8080"
+  frontend_url: "http://localhost:3000"
+
+auth:
+  token_key: "auth_token"
+  
+api:
+  timeout_ms: 5000
+  retry_attempts: 3 

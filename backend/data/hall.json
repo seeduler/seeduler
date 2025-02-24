@@ -1,5 +1,1 @@
-[
-  { "id": 1, "name": "Main Hall", "delayed_time": 15, "info": {} },
-  { "id": 2, "name": "Conference Room", "delayed_time": 10, "info": {} },
-  { "id": 3, "name": "Auditorium", "delayed_time": 20, "info": {} }
-]
+[{"id":1,"name":"Main Hall","delayed_time":15,"info":{}},{"id":2,"name":"Conference Room","delayed_time":10,"info":{}},{"id":3,"name":"Auditorium","delayed_time":20,"info":{}}]
